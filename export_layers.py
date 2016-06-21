@@ -13,10 +13,10 @@ class PNGExport(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
-        self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~", help="")
+        self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
 
     def effect(self):
-        output_path = self.options.path
+        output_path = os.path.expanduser(self.options.path)
         curfile = self.args[-1]
         layers = self.get_layers(curfile)
         counter = 1
@@ -27,11 +27,13 @@ class PNGExport(inkex.Effect):
 
             show_layer_ids = [layer[0] for layer in layers if layer[2] == "fixed" or layer[0] == layer_id]
 
-            if not os.path.exists(os.path.join(output_path, curfile)):
-                os.makedirs(os.path.join(output_path, curfile))
+            if not os.path.exists(os.path.join(output_path)):
+                os.makedirs(os.path.join(output_path))
 
-            layer_dest_svg_path = os.path.join(output_path, curfile, "%s.svg" % layer_label)
-            layer_dest_png_path = os.path.join(output_path, curfile, "%s - %s.png" % (str(counter).zfill(3), layer_label))
+            layer_dest_svg_path = os.path.join(output_path, "%s.svg" % layer_label)
+            inkex.debug(layer_dest_svg_path)
+            layer_dest_png_path = os.path.join(output_path, "%s - %s.png" % (str(counter).zfill(3), layer_label))
+            inkex.debug(layer_dest_png_path)
 
             self.export_layers(curfile, layer_dest_svg_path, show_layer_ids)
             self.exportPage(layer_dest_svg_path, layer_dest_png_path)
