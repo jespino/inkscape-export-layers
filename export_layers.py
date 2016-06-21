@@ -35,7 +35,12 @@ class PNGExport(inkex.Effect):
             layer_dest_png_path = os.path.join(output_path, "%s - %s.png" % (str(counter).zfill(3), layer_label))
 
             self.export_layers(curfile, layer_dest_svg_path, show_layer_ids)
-            self.exportPage(layer_dest_svg_path, layer_dest_png_path)
+            self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
+
+            if self.options.filetype == "jpg":
+                layer_dest_jpg_path = os.path.join(output_path, "%s - %s.jpg" % (str(counter).zfill(3), layer_label))
+                self.convertPngToJpg(layer_dest_png_path, layer_dest_jpg_path)
+                os.unlink(layer_dest_png_path)
 
             os.unlink(layer_dest_svg_path)
             counter += 1
@@ -81,8 +86,13 @@ class PNGExport(inkex.Effect):
 
         return layers
 
-    def exportPage(self, svg_path, output_path):
+    def exportToPng(self, svg_path, output_path):
         command = "inkscape -C -e \"%s\" \"%s\"" % (output_path, svg_path)
+        p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p.wait()
+
+    def convertPngToJpg(self, png_path, output_path):
+        command = "convert \"%s\" \"%s\"" % (png_path, output_path)
         p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
 
