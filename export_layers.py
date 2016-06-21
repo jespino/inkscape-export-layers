@@ -14,6 +14,7 @@ class PNGExport(inkex.Effect):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
         self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
+        self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpg', help='Exported file type')
 
     def effect(self):
         output_path = os.path.expanduser(self.options.path)

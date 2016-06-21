@@ -4,7 +4,11 @@
     <id>net.kaleidos.export.layers</id>
     <dependency type="executable" location="extensions">export_layers.py</dependency>
 	<param name="help" type="description">Export your file in different png files by layer</param>
-    <param name="path" type="string"  _gui-text="Export path">~/</param>
+    <param name="path" type="string"  _gui-text="Choose path to export">~/</param>
+    <param name="filetype" type="optiongroup" gui-text="Export layers as..." appearance="minimal">
+       <option selected value="jpeg">JPEG</option>
+       <option value="png">PNG</option>
+    </param>
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu>
