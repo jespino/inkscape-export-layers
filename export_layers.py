@@ -73,10 +73,10 @@ class PNGExport(inkex.Effect):
             layer_id = layer.attrib["id"]
             layer_label = layer.attrib[label_attrib_name]
 
-            if layer_label.startswith("[fixed] "):
+            if layer_label.lower().startswith("[fixed] "):
                 layer_type = "fixed"
                 layer_label = layer_label[8:]
-            elif layer_label.startswith("[export] "):
+            elif layer_label.lower().startswith("[export] "):
                 layer_type = "export"
                 layer_label = layer_label[9:]
             else:
