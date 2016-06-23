@@ -7,6 +7,7 @@ import os
 import subprocess
 import tempfile
 import shutil
+import copy
 
 
 class PNGExport(inkex.Effect):
@@ -34,7 +35,7 @@ class PNGExport(inkex.Effect):
             layer_dest_svg_path = os.path.join(output_path, "%s.svg" % layer_label)
             layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
 
-            self.export_layers(curfile, layer_dest_svg_path, show_layer_ids)
+            self.export_layers(layer_dest_svg_path, show_layer_ids)
             self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
 
             if self.options.filetype == "jpeg":
@@ -45,21 +46,21 @@ class PNGExport(inkex.Effect):
             os.unlink(layer_dest_svg_path)
             counter += 1
 
-    def export_layers(self, src, dest, show):
+    def export_layers(self, dest, show):
         """
-        Export selected layers of SVG in the file `src` to the file `dest`.
-        :arg  str    src:  path of the source SVG file.
+        Export selected layers of SVG to the file `dest`.
         :arg  str   dest:  path to export SVG file.
         :arg  list  hide:  layers to hide. each element is a string.
         :arg  list  show:  layers to show. each element is a string.
         """
-        for layer in self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
+        doc = copy.deepcopy(self.document)
+        for layer in doc.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
             layer.attrib['style'] = 'display:none'
             id = layer.attrib["id"]
             if id in show:
                 layer.attrib['style'] = 'display:inline'
 
-        self.document.write(dest)
+        doc.write(dest)
 
     def get_layers(self, src):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
