@@ -32,13 +32,13 @@ class PNGExport(inkex.Effect):
                 os.makedirs(os.path.join(output_path))
 
             layer_dest_svg_path = os.path.join(output_path, "%s.svg" % layer_label)
-            layer_dest_png_path = os.path.join(output_path, "%s - %s.png" % (str(counter).zfill(3), layer_label))
+            layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
 
             self.export_layers(curfile, layer_dest_svg_path, show_layer_ids)
             self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
 
             if self.options.filetype == "jpeg":
-                layer_dest_jpg_path = os.path.join(output_path, "%s - %s.jpg" % (str(counter).zfill(3), layer_label))
+                layer_dest_jpg_path = os.path.join(output_path, "%s_%s.jpg" % (str(counter).zfill(3), layer_label))
                 self.convertPngToJpg(layer_dest_png_path, layer_dest_jpg_path)
                 os.unlink(layer_dest_png_path)
 
