@@ -10,6 +10,7 @@
        <option value="png">PNG</option>
     </param>
     <param name="crop" type="boolean" _gui-text="Crop to drawn bounds?">false</param>
+    <param name="dpi" type="float" min="0.0" max="1000.0" _gui-text="Export DPI">90</param>
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu>
