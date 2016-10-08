@@ -9,6 +9,7 @@
        <option selected="selected" value="jpeg">JPEG</option>
        <option value="png">PNG</option>
     </param>
+    <param name="crop" type="boolean" _gui-text="Crop to drawn bounds?">false</param>
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu>
