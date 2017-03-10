@@ -34,18 +34,19 @@ class PNGExport(inkex.Effect):
             if not os.path.exists(os.path.join(output_path)):
                 os.makedirs(os.path.join(output_path))
 
-            layer_dest_svg_path = os.path.join(output_path, "%s.svg" % layer_label)
-            layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
+            with tempfile.NamedTemporaryFile() as fp_svg:
+                layer_dest_svg_path = fp_svg.name
+                self.export_layers(layer_dest_svg_path, show_layer_ids)
 
-            self.export_layers(layer_dest_svg_path, show_layer_ids)
-            self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
+                if self.options.filetype == "jpeg":
+                    with tempfile.NamedTemporaryFile() as fp_png:
+                        self.exportToPng(layer_dest_svg_path, fp_png.name)
+                        layer_dest_jpg_path = os.path.join(output_path, "%s_%s.jpg" % (str(counter).zfill(3), layer_label))
+                        self.convertPngToJpg(fp_png.name, layer_dest_jpg_path)
+                else:
+                    layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
+                    self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
 
-            if self.options.filetype == "jpeg":
-                layer_dest_jpg_path = os.path.join(output_path, "%s_%s.jpg" % (str(counter).zfill(3), layer_label))
-                self.convertPngToJpg(layer_dest_png_path, layer_dest_jpg_path)
-                os.unlink(layer_dest_png_path)
-
-            os.unlink(layer_dest_svg_path)
             counter += 1
 
     def export_layers(self, dest, show):
