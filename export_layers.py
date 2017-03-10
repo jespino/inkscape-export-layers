@@ -16,6 +16,8 @@ class PNGExport(inkex.Effect):
         inkex.Effect.__init__(self)
         self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
         self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpeg', help='Exported file type')
+        self.OptionParser.add_option("--crop", action="store", type="inkbool", dest="crop", default=False)
+        self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=90.0)
 
     def effect(self):
         output_path = os.path.expanduser(self.options.path)
@@ -88,7 +90,9 @@ class PNGExport(inkex.Effect):
         return layers
 
     def exportToPng(self, svg_path, output_path):
-        command = "inkscape -C -e \"%s\" \"%s\"" % (output_path, svg_path)
+        area_param = '-D' if self.options.crop else 'C'
+        command = "inkscape %s -d %s -e \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
+
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
 
