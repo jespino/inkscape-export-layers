@@ -115,8 +115,8 @@ def _make_temp_directory():
 
 def _main():
     e = PNGExport()
-    e.affect()
-    exit()
+    e.affect(output=False)
+
 
 if __name__ == "__main__":
     _main()
