@@ -2,6 +2,7 @@
 
 import sys
 sys.path.append('/usr/share/inkscape/extensions')
+import contextlib
 import inkex
 import os
 import subprocess
@@ -34,15 +35,15 @@ class PNGExport(inkex.Effect):
             if not os.path.exists(os.path.join(output_path)):
                 os.makedirs(os.path.join(output_path))
 
-            with tempfile.NamedTemporaryFile() as fp_svg:
-                layer_dest_svg_path = fp_svg.name
+            with _make_temp_directory() as tmp_dir:
+                layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
                 self.export_layers(layer_dest_svg_path, show_layer_ids)
 
                 if self.options.filetype == "jpeg":
-                    with tempfile.NamedTemporaryFile() as fp_png:
-                        self.exportToPng(layer_dest_svg_path, fp_png.name)
-                        layer_dest_jpg_path = os.path.join(output_path, "%s_%s.jpg" % (str(counter).zfill(3), layer_label))
-                        self.convertPngToJpg(fp_png.name, layer_dest_jpg_path)
+                    tmp_dest_png_path = os.path.join(tmp_dir, "export.png")
+                    self.exportToPng(layer_dest_svg_path, tmp_dest_png_path)
+                    layer_dest_jpg_path = os.path.join(output_path, "%s_%s.jpg" % (str(counter).zfill(3), layer_label))
+                    self.convertPngToJpg(tmp_dest_png_path, layer_dest_jpg_path)
                 else:
                     layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
                     self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
@@ -101,6 +102,15 @@ class PNGExport(inkex.Effect):
         command = "convert \"%s\" \"%s\"" % (png_path, output_path)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
+
+
+@contextlib.contextmanager
+def _make_temp_directory():
+    temp_dir = tempfile.mkdtemp(prefix="tmp-inkscape")
+    try:
+        yield temp_dir
+    finally:
+        shutil.rmtree(temp_dir)
 
 
 def _main():
