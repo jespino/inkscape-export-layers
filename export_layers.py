@@ -92,10 +92,17 @@ class PNGExport(inkex.Effect):
         return layers
 
     def exportToPng(self, svg_path, output_path):
-        area_param = '-D' if self.options.crop else 'C'
-        command = "inkscape %s -d %s -e \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
-
-        p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command = [
+            "inkscape",
+            "-D" if self.options.crop else "-C",
+            "-d", str(self.options.dpi),
+            "-e", output_path.encode("utf-8"),
+            svg_path.encode("utf-8")
+        ]
+        p = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
         p.wait()
 
     def convertPngToJpg(self, png_path, output_path):
