@@ -9,7 +9,25 @@ import subprocess
 import tempfile
 import shutil
 import copy
+import logging
+class write_file ():
+    def __init__(self):
+        self.datei = open("C:/Users/Martin/Desktop/test/export.txt", "w")
+    def write(self,text):
+        #''.join(xs)
+        if type(text) == "str":
+            pass
+        elif type(text) == "int":
+            text = str(text)
+        elif type(text) == "list":
+            text = "".join(text)
+        self.datei.write (str(text))
+        self.datei.write ("\n")
 
+    def close (self):
+        self.datei.close()
+#file = write_file()
+#file.write("#")
 class PNGExport(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
@@ -23,6 +41,7 @@ class PNGExport(inkex.Effect):
         output_path = os.path.expanduser(self.options.path)
         curfile = self.options.input_file
         layers = self.get_layers(curfile)
+
         if not os.path.exists(os.path.join(output_path)):
             os.makedirs(os.path.join(output_path))
         layers_to_export = []
@@ -41,20 +60,20 @@ class PNGExport(inkex.Effect):
                                     else:
                                         layers_to_export.append([ background , fixed , export])
 
+        file.write(layers_to_export)
         for layer in layers_to_export:
             layer_label = layer[2][1] + "_" + layer[1][1]
             show_layer_ids = layer[0] + layer[1] + layer[2]
             layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
 
-            if os.path.isfile(layer_dest_png_path):
-                if self.options.overwrite == False:
-                    continue
-            with _make_temp_directory() as tmp_dir:
-                layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
-                self.export_layers(layer_dest_svg_path, show_layer_ids)
+            if os.path.isfile(layer_dest_png_path) == False or self.options.overwrite == True:
 
-                layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
-                self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
+                with _make_temp_directory() as tmp_dir:
+                    layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
+                    self.export_layers(layer_dest_svg_path, show_layer_ids)
+
+                    layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
+                    self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
 
     def export_layers(self, dest, show):
         """
@@ -66,8 +85,9 @@ class PNGExport(inkex.Effect):
         doc = copy.deepcopy(self.document)
         for layer in doc.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
             layer.attrib['style'] = 'display:none'
+            label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
             id = layer.attrib["id"]
-            if id in show:
+            if id in show or "[show]" in layer.attrib[label_attrib_name]:
                 layer.attrib['style'] = 'display:inline'
 
         doc.write(dest)
