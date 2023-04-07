@@ -7,21 +7,21 @@ import os
 import subprocess
 import tempfile
 import shutil
-import copy
+import copy 
 
 
 class PNGExport(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
         inkex.Effect.__init__(self)
-        self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
-        self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpeg', help='Exported file type')
-        self.OptionParser.add_option("--crop", action="store", type="inkbool", dest="crop", default=False)
-        self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=90.0)
+        self.arg_parser.add_argument("--path", action="store", type=str, dest="path", default="~/", help="")
+        self.arg_parser.add_argument('--f', '--filetype', action='store', type=str, dest='filetype', default='jpeg', help='Exported file type')
+        self.arg_parser.add_argument("--crop", action="store", type=bool, dest="crop", default=False)
+        self.arg_parser.add_argument("--dpi", action="store", type=float, dest="dpi", default=90.0)
 
     def effect(self):
         output_path = os.path.expanduser(self.options.path)
-        curfile = self.args[-1]
+        curfile = self.options.input_file
         layers = self.get_layers(curfile)
         counter = 1
 
@@ -43,6 +43,7 @@ class PNGExport(inkex.Effect):
                         self.exportToPng(layer_dest_svg_path, fp_png.name)
                         layer_dest_jpg_path = os.path.join(output_path, "%s_%s.jpg" % (str(counter).zfill(3), layer_label))
                         self.convertPngToJpg(fp_png.name, layer_dest_jpg_path)
+                        fp_png.close()
                 else:
                     layer_dest_png_path = os.path.join(output_path, "%s_%s.png" % (str(counter).zfill(3), layer_label))
                     self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
@@ -85,15 +86,13 @@ class PNGExport(inkex.Effect):
                 layer_label = layer_label[9:]
             else:
                 continue
-
             layers.append([layer_id, layer_label, layer_type])
 
         return layers
 
     def exportToPng(self, svg_path, output_path):
         area_param = '-D' if self.options.crop else 'C'
-        command = "inkscape %s -d %s -e \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
-
+        command = "inkscape %s -d %s --export-filename \"%s\" \"%s\"" % (area_param, self.options.dpi, output_path, svg_path)
         p = subprocess.Popen(command.encode("utf-8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
 
@@ -105,7 +104,7 @@ class PNGExport(inkex.Effect):
 
 def _main():
     e = PNGExport()
-    e.affect()
+    e.run()
     exit()
 
 if __name__ == "__main__":
