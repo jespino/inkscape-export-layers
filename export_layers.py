@@ -10,24 +10,6 @@ import tempfile
 import shutil
 import copy
 import logging
-
-class write_file ():
-    def __init__(self):
-        self.datei = open("C:/Users/Martin/Desktop/test/export.txt", "w")
-    def write(self,text):
-        #''.join(xs)
-        if type(text) == "str":
-            pass
-        elif type(text) == "int":
-            text = str(text)
-        elif type(text) == "list":
-            text = "".join(text)
-        self.datei.write (str(text))
-        self.datei.write ("\n")
-
-    def close (self):
-        self.datei.close()
-file = write_file()
 class PNGExport(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
@@ -38,7 +20,6 @@ class PNGExport(inkex.Effect):
         self.arg_parser.add_argument("--dpi", action="store", type=float, dest="dpi", default=90.0)
 
     def effect(self):
-        file.write("#")
         output_path = os.path.expanduser(self.options.path)
         curfile = self.options.input_file
         layers = self.get_layers(curfile)
@@ -46,7 +27,6 @@ class PNGExport(inkex.Effect):
             os.makedirs(os.path.join(output_path))
         file.write(layers)
         for i in range(len(layers)):
-            file.write("#"+str(i))
             for ii in range(len(layers)-i-1,-1,-1): # find background
                 if layers[ii][2] == "background":
                     background = layers[ii]
@@ -57,11 +37,8 @@ class PNGExport(inkex.Effect):
                                 if layers[ii][2] == "export":
                                     export = layers[ii]
                                     show_layer_ids = background[0] + fixed[0] + export[0]
-                                    file.write (show_layer_ids)
                                     layer_label = export[1] + "_" + fixed[1]
-
                                     layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
-
                                     if os.path.isfile(layer_dest_png_path):
                                         if self.options.overwrite == False:
                                             continue
@@ -71,7 +48,6 @@ class PNGExport(inkex.Effect):
 
                                         layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
                                         self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
-        file.close()
     def export_layers(self, dest, show):
         """
         Export selected layers of SVG to the file `dest`.
