@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 import shutil
 import copy
-import logging
+
 class PNGExport(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
@@ -25,7 +25,7 @@ class PNGExport(inkex.Effect):
         layers = self.get_layers(curfile)
         if not os.path.exists(os.path.join(output_path)):
             os.makedirs(os.path.join(output_path))
-        file.write(layers)
+        layers_to_export = []
         for i in range(len(layers)):
             for ii in range(len(layers)-i-1,-1,-1): # find background
                 if layers[ii][2] == "background":
@@ -36,18 +36,26 @@ class PNGExport(inkex.Effect):
                             for ii in range(len(layers)-i-1,-1,-1): # find export
                                 if layers[ii][2] == "export":
                                     export = layers[ii]
-                                    show_layer_ids = background[0] + fixed[0] + export[0]
-                                    layer_label = export[1] + "_" + fixed[1]
-                                    layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
-                                    if os.path.isfile(layer_dest_png_path):
-                                        if self.options.overwrite == False:
-                                            continue
-                                    with _make_temp_directory() as tmp_dir:
-                                        layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
-                                        self.export_layers(layer_dest_svg_path, show_layer_ids)
+                                    if [ background , fixed , export] in layers_to_export:
+                                        pass
+                                    else:
+                                        layers_to_export.append([ background , fixed , export])
 
-                                        layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
-                                        self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
+        for layer in layers_to_export:
+            layer_label = layer[2][1] + "_" + layer[1][1]
+            show_layer_ids = layer[0] + layer[1] + layer[2]
+            layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
+
+            if os.path.isfile(layer_dest_png_path):
+                if self.options.overwrite == False:
+                    continue
+            with _make_temp_directory() as tmp_dir:
+                layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
+                self.export_layers(layer_dest_svg_path, show_layer_ids)
+
+                layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
+                self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
+
     def export_layers(self, dest, show):
         """
         Export selected layers of SVG to the file `dest`.
