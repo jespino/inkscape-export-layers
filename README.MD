@@ -13,7 +13,7 @@ There are three options for your layers when exporting:
 
 Check this example:
 
-![Layer export example](https://imgur.com/a/RlbdaOs)
+![Layer export example](https://i.imgur.com/ly4MhEw.png)
 
 The layer **[background] background** is a background layer and will always be exported combined with the **[export]** and **[fixed]** layers.
 
