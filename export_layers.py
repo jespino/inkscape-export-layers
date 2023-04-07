@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 import shutil
 import copy
-import logging
+
 class write_file ():
     def __init__(self):
         self.datei = open("C:/Users/Martin/Desktop/test/export.txt", "w")
@@ -26,8 +26,8 @@ class write_file ():
 
     def close (self):
         self.datei.close()
-#file = write_file()
-#file.write("#")
+file = write_file()
+file.write("#")
 class PNGExport(inkex.Effect):
     def __init__(self):
         """init the effetc library and get options from gui"""
@@ -60,7 +60,6 @@ class PNGExport(inkex.Effect):
                                     else:
                                         layers_to_export.append([ background , fixed , export])
 
-        file.write(layers_to_export)
         for layer in layers_to_export:
             layer_label = layer[2][1] + "_" + layer[1][1]
             show_layer_ids = layer[0] + layer[1] + layer[2]
@@ -83,6 +82,7 @@ class PNGExport(inkex.Effect):
         :arg  list  show:  layers to show. each element is a string.
         """
         doc = copy.deepcopy(self.document)
+        file.write(type(doc))
         for layer in doc.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS):
             layer.attrib['style'] = 'display:none'
             label_attrib_name = "{%s}label" % layer.nsmap['inkscape']
