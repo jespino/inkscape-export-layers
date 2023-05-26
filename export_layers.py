@@ -12,7 +12,8 @@ import copy
 
 class write_file ():
     def __init__(self,path):
-        self.datei = open(path + "export.txt", "w+")
+
+        self.datei = open(os.path.join(path,  "export.txt"), "w+")
     def write(self,text):
         #''.join(xs)
         if type(text) == "str":
@@ -35,7 +36,7 @@ class PNGExport(inkex.Effect):
         self.arg_parser.add_argument("--path", action="store", type=str, dest="path", default="~/", help="")
         self.arg_parser.add_argument("--crop", action="store", type=inkex.Boolean, dest="crop", default=False)
         self.arg_parser.add_argument("--overwrite", action="store", type=inkex.Boolean, dest="overwrite", default=True)
-        self.arg_parser.add_argument("--dpi", action="store", type=float, dest="dpi", default=90.0)
+        self.arg_parser.add_argument("--dpi", action="store", type=float, dest="dpi", default=300.0)
 
     def effect(self):
 
@@ -67,7 +68,9 @@ class PNGExport(inkex.Effect):
         for layer in layers_to_export:
             layer_label = layer[2][1] + "_" + layer[1][1]
             show_layer_ids = layer[0] + layer[1] + layer[2]
-            layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
+            if not os.path.exists(os.path.join(output_path , layer[2][1])):
+                os.makedirs(os.path.join(output_path , layer[2][1]))
+            layer_dest_png_path = os.path.join(output_path, layer[2][1], layer_label + ".png")
             self.file.write (layer_dest_png_path)
             self.file.write (os.path.isfile(layer_dest_png_path))
 
@@ -76,17 +79,13 @@ class PNGExport(inkex.Effect):
                     self.file.write ("make")
                     with _make_temp_directory() as tmp_dir:
                         layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
-                        self.export_layers(layer_dest_svg_path, show_layer_ids)
-
-                        layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
+                        self.export_layers(aclayer_dest_svg_path, show_layer_ids)
                         self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
             else:
                 self.file.write ("make")
                 with _make_temp_directory() as tmp_dir:
                     layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
                     self.export_layers(layer_dest_svg_path, show_layer_ids)
-
-                    layer_dest_png_path = os.path.join(output_path,  layer_label + ".png")
                     self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
 
     def export_layers(self, dest, show):
