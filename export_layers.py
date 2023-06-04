@@ -66,23 +66,34 @@ class PNGExport(inkex.Effect):
         self.file.write("overwrite")
         self.file.write(self.options.overwrite)
         for layer in layers_to_export:
-            layer_label = layer[2][1] + "_" + layer[1][1]
+            if "||" in layer[1][1]:
+                filename_export = layer[1][1].replace ("||" , layer[2][1])
+            else:
+                filename_export = layer[1][1] + "-" + layer[2][1]
+
+            filename_export = filename_export.replace("_","-")
+            filename_export = filename_export.replace(" ","-")
+            filename_export = filename_export.replace("--","-")
+
+            filename_export = filename_export.lower()
+            self.file.write(filename_export)
+
             show_layer_ids = layer[0] + layer[1] + layer[2]
             if not os.path.exists(os.path.join(output_path , layer[2][1])):
                 os.makedirs(os.path.join(output_path , layer[2][1]))
-            layer_dest_png_path = os.path.join(output_path, layer[2][1], layer_label + ".png")
-            self.file.write (layer_dest_png_path)
-            self.file.write (os.path.isfile(layer_dest_png_path))
+            layer_dest_png_path = os.path.join(output_path, layer[2][1], filename_export + ".png")
+            #self.file.write (layer_dest_png_path)
+            #self.file.write (os.path.isfile(layer_dest_png_path))
 
             if os.path.isfile(layer_dest_png_path) == True:
                 if self.options.overwrite == True:
-                    self.file.write ("make")
+                    #self.file.write ("make")
                     with _make_temp_directory() as tmp_dir:
                         layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
-                        self.export_layers(aclayer_dest_svg_path, show_layer_ids)
+                        self.export_layers(layer_dest_svg_path, show_layer_ids)
                         self.exportToPng(layer_dest_svg_path, layer_dest_png_path)
             else:
-                self.file.write ("make")
+                #self.file.write ("make")
                 with _make_temp_directory() as tmp_dir:
                     layer_dest_svg_path = os.path.join(tmp_dir, "export.svg")
                     self.export_layers(layer_dest_svg_path, show_layer_ids)
