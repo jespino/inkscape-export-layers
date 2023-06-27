@@ -127,7 +127,7 @@ class PNGExport(inkex.Effect):
             p.wait()
         except FileNotFoundError as e:
             import ctypes            
-            ctypes.windll.user32.MessageBoxW(0, "ImageMacick is required to convert PNG to JPG.", "ImageMacick not found", 16)
+            ctypes.windll.user32.MessageBoxW(0, "ImageMagick is required to convert PNG to JPG.", "ImageMagick not found", 16)
 
 
 @contextlib.contextmanager
