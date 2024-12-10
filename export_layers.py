@@ -12,16 +12,16 @@ import copy
 
 class PNGExport(inkex.Effect):
     def __init__(self):
-        """init the effetc library and get options from gui"""
+        """init the effect library and get options from gui"""
         inkex.Effect.__init__(self)
-        self.OptionParser.add_option("--path", action="store", type="string", dest="path", default="~/", help="")
-        self.OptionParser.add_option('-f', '--filetype', action='store', type='string', dest='filetype', default='jpeg', help='Exported file type')
-        self.OptionParser.add_option("--crop", action="store", type="inkbool", dest="crop", default=False)
-        self.OptionParser.add_option("--dpi", action="store", type="float", dest="dpi", default=90.0)
+        self.arg_parser.add_argument("--path", action="store", type=str, dest="path", default="~/", help="")
+        self.arg_parser.add_argument('-f', '--filetype', action='store', type=str, dest='filetype', default='jpeg', help='Exported file type')
+        self.arg_parser.add_argument("--crop", action="store", type=inkex.Boolean, dest="crop", default=False)
+        self.arg_parser.add_argument("--dpi", action="store", type=float, dest="dpi", default=90.0)
 
     def effect(self):
         output_path = os.path.expanduser(self.options.path)
-        curfile = self.args[-1]
+        curfile = self.options.input_file
         layers = self.get_layers(curfile)
         counter = 1
 
@@ -105,7 +105,7 @@ class PNGExport(inkex.Effect):
 
 def _main():
     e = PNGExport()
-    e.affect()
+    e.run()
     exit()
 
 if __name__ == "__main__":
