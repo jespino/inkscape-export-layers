@@ -2,6 +2,21 @@
 
 Inkscape extension to export SVG layers as (JPG, PNG) images. The exported images can be a combination of multiple layers.
 
+## Installation
+
+### Automatic Installation
+Run the install script:
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+### Manual Installation
+Copy `export_layers.py` and `export_layers.inx` to your Inkscape extensions directory:
+- Linux: `~/.config/inkscape/extensions/`
+- Windows: `%APPDATA%\inkscape\extensions\`
+- MacOS: `$HOME/.config/inkscape/extensions/`
+
 ## How it works
 To export your Inkscape file as an image open an inkscape file with multiple layers (otherwise you can simply use the in-built export tool 'Ctrl + E').
 
