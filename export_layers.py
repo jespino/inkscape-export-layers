@@ -80,7 +80,9 @@ class PNGExport(inkex.Effect):
 
             # Check if layer is visible
             style = layer.get('style', '')
-            is_visible = 'display:none' not in style
+            is_visible = True
+            if style is not None:
+                is_visible = 'display:none' not in style
 
             if self.options.only_visible and not is_visible:
                 continue
