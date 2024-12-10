@@ -1,6 +1,19 @@
-# Inkscape Export Layers
+# [DEPRECATED] Inkscape Export Layers
 
-Inkscape extension to export SVG layers as (JPG, PNG) images. The exported images can be a combination of multiple layers.
+**⚠️ This project is no longer actively maintained ⚠️**
+
+Please use the more modern and actively maintained fork at: https://github.com/dmitry-t/inkscape-export-layers
+
+The new version includes:
+- Support for Inkscape version 1.0+
+- Additional export formats (PDF, SVG)
+- Progressive reveal option for presentations
+- Better error handling and diagnostics
+- Active maintenance and bug fixes
+
+## Original Description
+
+This was an Inkscape extension to export SVG layers as (JPG, PNG) images. The exported images could be combined from multiple layers.
 
 ## Installation
 
