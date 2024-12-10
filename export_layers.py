@@ -18,6 +18,7 @@ class PNGExport(inkex.Effect):
         self.arg_parser.add_argument('-f', '--filetype', action='store', type=str, dest='filetype', default='jpeg', help='Exported file type')
         self.arg_parser.add_argument("--crop", action="store", type=inkex.Boolean, dest="crop", default=False)
         self.arg_parser.add_argument("--dpi", action="store", type=float, dest="dpi", default=90.0)
+        self.arg_parser.add_argument("--only_visible", action="store", type=inkex.Boolean, dest="only_visible", default=False)
 
     def effect(self):
         output_path = os.path.expanduser(self.options.path)
@@ -76,6 +77,13 @@ class PNGExport(inkex.Effect):
 
             layer_id = layer.attrib["id"]
             layer_label = layer.attrib[label_attrib_name]
+
+            # Check if layer is visible
+            style = layer.get('style', '')
+            is_visible = 'display:none' not in style
+
+            if self.options.only_visible and not is_visible:
+                continue
 
             if layer_label.lower().startswith("[fixed] "):
                 layer_type = "fixed"
